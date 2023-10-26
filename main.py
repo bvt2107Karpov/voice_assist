@@ -10,12 +10,11 @@ import webbrowser
 import pyautogui
 import mouse
 import keyboard
-import pyaudio
+from random import randint
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
-from random import randint
 
 devices = AudioUtilities.GetSpeakers()
 interface = devices.Activate(
@@ -25,15 +24,14 @@ volume = cast(interface, POINTER(IAudioEndpointVolume))
 # настройки
 opts = {
     "alias": ('кеша'),
-    "tbr": (),
     "cmds": {
         "ctime": ('текущее время', 'сейчас времени', 'который час'),
         "stupid1": ('расскажи анекдот', 'рассмеши меня', 'ты знаешь анекдоты', 'шутка', 'прикол'),
         "startWatch": ('запусти секундомер', 'включи секундомер', 'засеки время'),
         "stopWatch": ('выключи секундомер', 'останови секундомер', 'останови секундомер', 'стоп', 'stop'),
         "thanks": (
-        'ты молодец', 'умница', 'молодец', 'ты умница', 'ты умничка', 'умница', 'гений', 'ты гений', 'браво', 'хорош',
-        'отлично', 'красава', 'красавчик', 'отличная работа', 'хорошая работа'),
+        'ты молодец', 'умница', 'молодец', 'ты умница', 'ты умничка', 'умница', 'гений', 'ты гений', 'браво',
+        'отлично', 'отличная работа', 'хорошая работа'),
         "vk": ('вк', 'вконтакте'),
         "yandex": ("браузер"),
         'mute': ('убери звук', 'выключи звук'),
@@ -45,10 +43,7 @@ opts = {
         'ali': ('али', 'ali', 'aliexpress', 'алиэспресс'),
         'wiki': ('вики', 'wiki'),
         'mail': ('почта', 'mail', 'яндекс почта', 'email'),
-        'wb': ('wildberries', 'wb', 'вб'),
-        "calc": ('математика', 'посчитай'), #разработка
-        "conv": ("валюта", "конвертер", "доллар", 'руб', 'евро'), #разработка
-
+        'wb': ('wildberries', 'wb', 'вб')
     }
 }
 
@@ -122,13 +117,9 @@ def callback(recognizer, audio):
             for x in opts['alias']:
                 cmd = cmd.replace(x, "").strip()
 
-            for x in opts['tbr']:
-                cmd = cmd.replace(x, "").strip()
-
             # распознаем и выполняем команду
             cmd = recognize_cmd(cmd)
             execute_cmd(cmd['cmd'])
-
 
     except sr.UnknownValueError:
         print("[log] Голос не распознан!")
@@ -220,18 +211,14 @@ def execute_cmd(cmd):
         speak(waited)
         webbrowser.open('https://mail.yandex.ru/?uid=1053847637#inbox', new=2)
 
-    #    elif cmd == 'calc':
-    #        calc()
-
     else:
         print('Команда не распознана, повторите!')
 
 
-isRunning = False
-startTime = 0
-anekdot = True
-
 waited = random.choice(wait)
+
+
+anekdot = True
 
 
 def start_anekdot():
@@ -246,7 +233,8 @@ def start_anekdot():
     speak(end_joke)
 
 
-
+isRunning = False
+startTime = 0
 
 def startWatch():
     global isRunning, startTime
@@ -278,6 +266,8 @@ with m as source:
     r.adjust_for_ambient_noise(source)
 
 speak_engine = pyttsx3.init()
+
+
 ru_voice_id = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_RU-RU_IRINA_11.0"
 speak_engine.setProperty('voice', ru_voice_id)
 speak_engine.setProperty("rate", 250)
